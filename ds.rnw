@@ -1,0 +1,812 @@
+\documentclass[12pt,openright]{article}
+%\usepackage[headings]{fullpage}
+%\usepackage[table]{xcolor}
+\usepackage{xcolor}
+\usepackage{soul}   % allows for highlighting
+%\usepackage{oldstyle,hfoldsty}
+\usepackage{fancyhdr,lastpage}
+\usepackage{attachfile2}
+\usepackage{verbatim}   %  begin/end comments
+\usepackage[parfill]{parskip} % easier to read spaceing b/t paragraphs
+\usepackage[lofdepth,lotdepth]{subfig}
+%\usepackage{subcaption}  - never use this package! it sucks!
+%\usepackage{textcomp}  % R output: defines \textquotesingle
+%\usepackage[oldstylenumsmath,notext,lightmath]{kpfonts} % oldstyle nums in math mode
+%\usepackage[oldstylenumsmath,lightmath]{kpfonts} % oldstyle nums in math mode
+%\usepackage[fulloldstylenums, nott]{kpfonts} %
+\usepackage[]{concmath} %
+%\usepackage[T1]{fontenc} %
+%\usepackage[math]{iwona}
+%\usepackage[math]{anttor}
+%\usepackage{gfsartemisia-euler}
+%\usepackage[osf]{libertine}
+%\usepackage[rm={oldstyle},tt={oldstyle=false}]{cfr-lm}
+%\usepackage[default]{gfsneohellenic}
+\usepackage[LGR,T1]{fontenc} %% LGR encoding is needed for loading the package gfsneohellenic
+%\usepackage{boisik}
+\usepackage[T1]{fontenc} %
+%\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{mathtools,bm,array} % mathtools also loads amsmath
+\usepackage[page]{appendix}
+%\usepackage{pdfpages}
+\usepackage{multirow,booktabs}
+\usepackage[nostamp]{draftwatermark}
+\usepackage{units}
+%\usepackage{dcolumn}  % align tables by decimal
+%  \newcolumntype{d}[1]{D{.}{\cdot}{#1}}  % decimal column type
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage[inline]{showlabels}
+\usepackage{geometry,pdflscape}
+%\usepackage{layouts}
+% for huxtable package:
+%\usepackage{array} \usepackage{caption} \usepackage{graphicx} \usepackage{siunitx} \usepackage{colortbl} \usepackage{multirow} \usepackage{hhline} \usepackage{calc} \usepackage{tabularx} \usepackage{threeparttable} \usepackage{wrapfig}  % for huxtable
+\usepackage{listings}
+\usepackage[all]{hypcap} % click on ref-- goes to top of figure/table, not bottom
+\usepackage{hyperref}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    bookmarksnumbered=true, 
+    unicode=true,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    %pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={Applied Statistics --- McFarland},         % title
+    pdfauthor={Mark A. McFarland, P.E.},     % author
+    linktoc=all, 
+    %linktocpage=true,
+    pdfsubject={path loss, Applied Statistics},   % subject of the document
+    %pdfcreator={Creator},   % creator of the document
+    %pdfproducer={Producer}, % producer of the document
+    %pdfkeywords={keyword1} {key2} {key3}, % list of keywords
+    %pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue, %red,          % color of internal links
+    citecolor=magenta,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=purple           % color of external links
+}
+
+
+\title{Data Science Clutter Project\\Lab Notebook}
+\author{\textsc{Mark McFarland, P.E.}\footnote{ Contact: \href{mailto:mark@its.bldrdoc.gov}{\ttfamily mark@its.bldrdoc.gov}, 303/497-4132}  \\
+%\quad \textsc{Chriss  Hammerschmidt} \quad \textsc{Bob Johnk} \\
+%\textsc{Yeh Lo} \quad \textsc{Iris Tobias} \quad{Ron Carey} \quad \textsc{Raiann Kaiser}\\
+  \normalsize{\textit{Institute for Telecommunication Sciences}}\\
+  \normalsize{\textit{Boulder, CO}}}
+\date{\today}
+
+%\SetWatermarkText{\textbf{\textsf{draft}}}
+%\SetWatermarkLightness{.95}
+
+\attachfilesetup{
+  author=mcfarland,
+  description={View Code},
+  mimetype=text/plain,
+  color={0 .4 .4},
+  %icon=PushPin,
+  %icon=Tag,
+  icon=Paperclip,
+  scale=1.00}
+
+\newcommand{\R}{\textsf{R}}
+\newcommand{\pkg}[1]{\textsl{#1}}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+
+\newcommand{\fcn}[1]{\texttt{\color{brown} #1}}
+
+%\global\mdfdefinestyle{default}{%
+%  outerlinewidth=1pt,innerlinewidth=0pt,
+%  outerlinecolor=gray,
+%  %frametitle={\hfill Hypothesis Test},
+%  %backgroundcolor=blue!10,
+%  roundcorner=10pt
+%}
+
+%% set up header:
+%\setlength{\headheight}{15pt}
+%\let\Oldpart\part
+%\newcommand{\parttitle}{}
+%\renewcommand{\part}[1]{\Oldpart{#1}\renewcommand{\parttitle}{#1}}
+
+\begin{document}
+
+\maketitle 
+\thispagestyle{empty}
+
+\begin{abstract}
+
+ This document is my lab notebook, containing my analysis for the project.
+%
+  %\bigskip 
+
+  %\noindent \textbf{Keywords:} modeling, path loss, RF clutter, RF propagation, ANOVA, statistical learning, data analysis.
+\end{abstract}
+
+
+
+\setcounter{tocdepth}{3}
+\pagestyle{plain}
+\pagenumbering{roman}
+\tableofcontents
+%\setcounter{page}{2}
+%\listoffigures
+%\listoftables
+
+\clearpage
+
+\pagestyle{fancy}
+% header
+%\fancyhead[L]{\textsl{EMEN 5900}}
+%\fancyhead[R]{\textsl{Lecture 8 in \R{}}}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% footer
+%\fancyfoot[L]{\emph{Clutter Project}}
+\fancyfoot[L]{\emph{McFarland}}
+\fancyfoot[C]{--- \emph{{\thepage} of \pageref{LastPage}} ---}
+%\fancyfoot[R]{\emph{\today}}
+\fancyfoot[R]{\emph{Lab Notebook}}
+%\fancyfoot[R]{\emph{Lecture 8 in \textsf{R}}}
+%\fancyhead[LE,RO]{\slshape \leftmark}
+%\fancyhead[LO,RE]{\slshape \rightmark}
+%\fancyhead[L]{\thepart}
+\renewcommand{\footrulewidth}{0.5pt}
+
+%\renewcommand{\appendixpagename}{Additional Visualizations}
+
+<<setOptions, echo=F, include=F, cache=F, purl=F>>=
+# set some display options  for including R code and R output in document
+opts_chunk$set(
+ background=rep(0.90, 3),
+ size='small',
+ tidy=F,
+ replace.assign=F,
+ width=60,
+ dev='png',
+ cache=T,
+ fig.pos='h!',
+ fig.align='center',
+ fig.width=6, fig.height=3,
+ show.signif.stars=T,
+ keep.blank.lines=T,
+ echo=F) 
+@
+
+
+<<AUTHOR, include=F>>= 
+# written by: Mark McFarland, P.E.
+#             December, 2020
+#             Boulder, CO
+#                   ~+~
+@                     
+
+
+%\fancyfoot[C]{--- \emph{{\thepage} of \pageref{LastPage}} ---}
+%\fancyhead{} %[LE,RO]{\slshape \rightmark}
+%\fancyhead[L]{\slshape Part II} %[LE,RO]{\slshape \rightmark}
+%\fancyhead[R]{\slshape jjj} %[LE,RO]{\slshape \rightmark}
+%\fancyhead[LE,RO]{\slshape \rightmark}
+%\fancyhead[LO,RE]{\slshape \leftmark}
+%\pagenumbering{arabic}
+%% also - must \usepackage[headings]{fullpage}
+
+%\chapter[Comparison]{A Comparison of Two Measurements}
+\section{Data Overview}
+I examine the measurement data located in the project folder. 
+
+\subsection{Phoenix Data}
+Summarize the Arizona data.  There were Phoneix area measurements and ``North Lot to Downtown'' measurements. 
+ 
+\begin{enumerate}
+  \item Look at the data files we have
+<<engine='bash', echo=T>>=
+tree -fi data
+@
+14 CSV files (or acquisitions), some TXT.
+
+  \item Number of observations in each CSV:
+<<engine='bash', echo=T>>=
+wc -l data/*.csv
+@
+From about 2K--8K observations in each run.
+  
+  \item Examine one of the TXT files
+<<engine='bash', echo=T>>=
+cat data/AZ_LincolnHeight_Dwntwn_Run1.txt
+@
+The remaining TXT files have similar information. 
+
+  \item Read in data in CSV files
+<<>>=
+d1=read.table('data/AZ_LincolnHeight_Dwntwn_Run1.csv', sep=',', header=T) 
+d1$city=as.factor('LincolnHeight')
+d1$region=as.factor('downtown')
+d1$run=as.factor(1)
+
+d2=read.table('data/AZ_LincolnHeight_Dwntwn_Run2.csv', sep=',', header=T) 
+d2$city=as.factor('LincolnHeight')
+d2$region=as.factor('downtown')
+d2$run=as.factor(2)
+
+d3=read.table('data/AZ_LincolnHeight_Suburb_Run1.csv', sep=',', header=T) 
+d3$city=as.factor('LincolnHeight')
+d3$region=as.factor('suburb')
+d3$run=as.factor(1)
+
+d4=read.table('data/AZ_LincolnHeight_Suburb_Run2.csv', sep=',', header=T) 
+d4$city=as.factor('LincolnHeight')
+d4$region=as.factor('suburb')
+d4$run=as.factor(2)
+
+d5=read.table('data/AZ_LincolnHeight_Suburb_Run3.csv', sep=',', header=T) 
+d5$city=as.factor('LincolnHeight')
+d5$region=as.factor('suburb')
+d5$run=as.factor(3)
+
+d.lh=rbind(d1, d2, d3, d4, d5)
+
+
+d1=read.table('data/AZ_OpenArms_Pima.csv', sep=',', header=T) 
+d1$city=as.factor('OpenArms')
+d1$region=as.factor('Pima')
+d1$run=as.factor(1)
+
+d2=read.table('data/AZ_OpenArms_Sub_Run1.csv', sep=',', header=T) 
+d2$city=as.factor('OpenArms')
+d2$region=as.factor('suburb')  # NOTE: originally 'sub'
+d2$run=as.factor(1)
+
+d3=read.table('data/AZ_OpenArms_Sub_Run2.csv', sep=',', header=T) 
+d3$city=as.factor('OpenArms')
+d3$region=as.factor('suburb')
+d3$run=as.factor(2)
+
+d.oa=rbind(d1, d2, d3)
+
+
+d1=read.table('data/AZ_Phoenix_North_Dwntwn.csv', sep=',', header=T) 
+d1$city=as.factor('PhoenixN')
+d1$region=as.factor('downtown')
+d1$run=as.factor(1)
+
+d2=read.table('data/AZ_Phoenix_North_North.csv', sep=',', header=T) 
+d2$city=as.factor('PhoenixN')
+d2$region=as.factor('north')
+d2$run=as.factor(1)
+
+d3=read.table('data/AZ_Phoenix_South_Dwntwn.csv', sep=',', header=T) 
+d3$city=as.factor('PhoenixS')
+d3$region=as.factor('downtown')
+d3$run=as.factor(1)
+
+d4=read.table('data/AZ_Phoenix_South_South.csv', sep=',', header=T) 
+d4$city=as.factor('PhoenixS')
+d4$region=as.factor('south')
+d4$run=as.factor(1)
+
+d.p=rbind(d1, d2, d3, d4)
+
+d=rbind(d.lh, d.oa, d.p)
+names(d)[1:4]=c('time', 'lat', 'lon', 'pl.m')
+d$pl.m=d$pl.m*-1
+#levels(d$region)[4]='suburb'
+@
+Note that I exclude the data file \fcn{NorthLottoDwntwnPhoenix.csv}.
+
+  \item Dimensions of data:
+<<>>=
+dim(d)
+@
+
+  \item Number of observations per route, run, \& location:
+<<>>=
+replications(pl.m~city*region*run, data=d)
+@
+
+  \item Summarize data:
+<<>>=
+summary(d) 
+@
+The variable \fcn{pl.m} is the measured path loss. 
+Not sure if \textit{sub} region and \textit{suburb} region  refer to the same region\ldots both suburb?  I'll assume so.
+
+Why were repeated runs made? 
+
+
+  \item View unstacked histograms of these data:
+<<fig.height=6, fig.width=6, message=F>>=
+ggplot(d, aes(x=pl.m, fill=run)) +
+  geom_histogram(position='identity', alpha=0.5) +
+  #geom_histogram( position='dodge') +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region, labeller = "label_both")
+@
+
+
+  \item View boxplots:
+<<fig.height=5>>=
+ggplot(d, aes(x=run, y=pl.m, fill=run)) +
+  geom_boxplot(coef=1e3) +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region)
+@
+
+  
+  \item Examine time series plots
+<<fig.height=5, dpi=75>>=
+ggplot(d, aes(x=time, y=pl.m, shape=run, colour=run)) +
+  geom_line() +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region) 
+  #facet_grid(city~region) 
+@
+Not sure what the purpose of runs 2 \& 3 are.  Moving forward, I'll just include run 1 in my analysis. 
+
+
+  \item Plot measurement data from Phoenix
+<<fig.height=8, fig.width=10, dpi=75>>=
+# set up api key: 
+# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
+#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+library(ggmap)   
+loc = c(lon=mean(d$lon), lat=mean(d$lat))
+plMap.phx = get_map(location=loc, zoom=11, source='stamen', maptype='terrain', messaging=T)
+
+txLoc=data.frame(lon=-108.2404, lat=38.99187)
+ 
+ggmap(plMap.phx, darken=0.00, extent='panel') +
+  geom_point(data=d[d$run=='1',], aes(x=lon, y=lat, colour=pl.m), size=0.50) +
+  #geom_point(data=txLoc, aes(x=lon, y=lat), pch=4,colour='yellow', size=5) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL) + 
+  facet_wrap(city~region, nrow=2, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+@
+ 
+%  \item Examine serial correlation via ACF plots for each run, location, and obstruction:
+%<<fig.height=8, fig.width=10>>=
+%dl=dlply(d.e2, .(loc, run, obstr))
+%par(mfrow=c(3,3))
+%for(i in 1:9) {
+%  acf(dl[[i]]$cltr, main=names(dl)[i],  lag.max=100)
+%}
+%
+%#library(ggfortify)
+%#aut1oplot()
+%@   
+%There is extensive serial correlation in the data.  This must be addressed prior to further analysis.
+%    
+%  \item Address serial correlation.  Downsample, taking every 25th observation:
+%<<>>=
+%dl=dlply(d.e2, .(loc, run, obstr))
+%#dld=lapply(dl[5:9], function(x) dplyr::sample_n(x, 1500))
+%dld=lapply(dl, function(x) x[seq(1, nrow(x), 25),])
+%@
+%    Plot ACF again:
+%<<fig.height=8, fig.width=10>>=
+%par(mfrow=c(3,3))
+%for(i in 1:9) {
+%  acf(dld[[i]]$cltr, main=names(dld)[i],  lag.max=50)
+%}
+%@
+%Better.  %Still more work to do in downsampling each case.  Some may be over- or under-sampled still.
+
+
+  \end{enumerate}
+
+%  Take a look at the dispersion measure (ADM):
+<<eval=F>>=
+fun=function(x) { ada=scale(x, scale=F, center=median(cltr)) }
+
+
+jcltr.ada=scale(d.e2$cltr, center=median(d.e2$cltr), scale=F)
+jj=ddply(d.e2, .(run, loc, obstr), mutate, 
+         center=median(cltr),
+         cltr.ada=scale(cltr, center=median(cltr), scale=F))
+@
+
+\end{enumerate}
+
+
+\subsection {Grand Junction}
+\begin{enumerate}
+  \item Read in Grand Junction - Grand Mesa data, four runs
+<<size='scriptsize'>>=
+d1=read.table('../tc/rfData/GrandJunction-GrandMesa/GrandMesa-to-Route1_1771-MHz_Jun0719_1_10.2_3_tbcorr_noheader.csv', sep=',', header=T) 
+d1$route=as.factor(1)
+d1$loc=as.factor('Grand Mesa')
+
+d2=read.table('../tc/rfData/GrandJunction-GrandMesa/GrandMesa-to-Route2_1771-MHz_Jun0819_1_10.2_3_tbcorr_noheader.csv', sep=',', header=T) 
+d2$route=as.factor(2)
+d2$loc=as.factor('Grand Mesa')
+
+d3=read.table('../tc/rfData/GrandJunction-GrandMesa/GrandMesa-to-Route3_1771-MHz_Jun0819_1_10.2_3_tbcorr_noheader.csv', sep=',', header=T) 
+d3$route=as.factor(3)
+d3$loc=as.factor('Grand Mesa')
+
+d4=read.table('../tc/rfData/GrandJunction-GrandMesa/GrandMesa-to-Route4_1771-MHz_Jun0919_1_10.2_3_tbcorr_noheader.csv', sep=',', header=T) 
+d4$route=as.factor(4)
+d4$loc=as.factor('Grand Mesa')
+
+
+d.g=rbind(d1, d2, d3, d4)
+d.g=d.g[,-c(1,10:13)]
+
+names(d.g)=c('time', 'lat', 'lon', 'pl.meas', 'pl.itm', 'fspl', 'dist', 'angle', 'route', 'location')
+d.g$pl.meas=abs(d.g$pl.meas)  # assuming path gain is recorded
+d.g$pl.itm=abs(d.g$pl.itm)  # assuming path gain is recorded
+d.g$fspl=abs(d.g$fspl)  # assuming path gain is recorded
+
+head(d.g)
+@
+%  Next Step: need to remove the data acquired during the drive down from the transmitter.
+<<eval=F>>=
+d.g=d.g[d.g$lat>39.02,]
+@
+  Dimensions of data:
+<<>>=
+dim(d.g)
+@
+ 
+  \item Plot measurement data from Grand Junction - Grand Mesa, four routes.  Transmitter is marked with an \emph{X}. 
+<<fig.height=5, dpi=150>>=
+# set up api key: 
+# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
+#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+library(ggmap)   
+loc = c(lon=mean(d.g$lon)+0.04000, lat=mean(d.g$lat-0.0400))
+plMap.gm = get_map(location=loc, zoom=10, source='stamen', maptype='terrain', messaging=T)
+
+txLoc=data.frame(lon=-108.2404, lat=38.99187)
+
+ggmap(plMap.gm, darken=0.00, extent='panel') +
+  geom_point(data=d.g, aes(x=lon, y=lat, colour=pl.meas), size=0.50) +
+  geom_point(data=txLoc, aes(x=lon, y=lat), pch=4,colour='black', size=5) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL) + 
+  facet_wrap(~route, nrow=2, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+@
+
+\end{enumerate}
+
+\subsection{Salt Lake City}
+
+\begin{enumerate}
+  \item Read in Salt Lake City data, three runs
+<<size='scriptsize'>>=
+d1=read.table('../tc/rfData/SaltLakeCity-CityCreek/CityCreek-to-South_1773-MHz_Jun1318_1_19.4_3_tbcorr_noheader.csv', sep=',', header=T) 
+d1$route=as.factor(1)
+d1$loc=as.factor('SLC')
+
+d2=read.table('../tc/rfData/SaltLakeCity-CityCreek/CityCreek-to-SubWest_1773-MHz_Jun1118_1_19.4_3_tbcorr_noheader.csv', sep=',', header=T) 
+d2$route=as.factor(2)
+d2$loc=as.factor('SLC')
+
+d3=read.table('../tc/rfData/SaltLakeCity-CityCreek/CityCreek-to-Urban_1773-MHz_Jun1218_1_19.4_3_tbcorr_noheader.csv', sep=',', header=T) 
+d3$route=as.factor(3)
+d3$loc=as.factor('SLC')
+
+d.s=rbind(d1, d2, d3)
+d.s=d.s[,-c(1,10:13)]
+
+names(d.s)=c('time', 'lat', 'lon', 'pl.meas', 'pl.itm', 'fspl', 'dist', 'angle', 'route', 'location')
+d.s$pl.meas=abs(d.s$pl.meas)  # assuming path gain is recorded
+d.s$pl.itm=abs(d.s$pl.itm)  # assuming path gain is recorded
+d.s$fspl=abs(d.s$fspl)  # assuming path gain is recorded
+
+head(d.s)
+@
+  Dimensions of data:
+<<>>=
+dim(d.s)
+@
+
+  \item Plot measurement data from Salt Lake City, three routes.  Transmitter is marked with an \emph{X}. 
+<<fig.height=5, dpi=150, messages=F>>=
+# set up api key:
+# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
+#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+library(ggmap)  
+loc = c(lon=median(d.s$lon)+0.00000, lat=median(d.s$lat-0.0000))
+plMap.slc = get_map(location=loc, zoom=12, source='stamen', maptype='terrain', messaging=T)
+
+#txLoc=data.frame(lon=-108.2404, lat=38.99187) #GM
+#txLoc=data.frame(lon=-108.2404, lat=39.089337) #LM
+txLoc=data.frame(lon=-111.880944, lat=40.807189) #SLC
+
+ggmap(plMap.slc, darken=0.00, extent='panel') +
+  geom_point(data=d.s, aes(x=lon, y=lat, colour=pl.meas), size=0.50) +
+  geom_point(data=txLoc, aes(x=lon, y=lat), pch=4,colour='black', size=5) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL) + 
+  facet_wrap(~route, nrow=2)+#, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+@
+
+  \item 
+\end{enumerate}
+
+
+\section{Geospatial Operations}
+An example of using geospatial libraries in \fcn{R} to subset measurement data.  First, the \fcn{sp} library for spatial data: points, lines, polygons, and grids.
+
+\begin{enumerate} 
+<<setup,eval=F, echo=FALSE>>=
+knit_hooks$set(source = function(x, options) {
+    paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x, 
+        "\\end{lstlisting}\n", sep = "")
+})
+@
+  \item  Some example code using the \fcn{sp} library to identify observations which fall within a given polygon. 
+<<readData, eval=F, echo=F, size='footnotesize'>>=
+#file='data/spreadsheet_1760M_loant_hipwr_offpeak_20mph_final.csv'
+#j = read.table(file='data/spreadsheet_1760M_loant_hipwr_offpeak_20mph_final.csv', header=T, sep=',')
+
+library(plyr)
+files=list.files(path='~/projects/clutter/screeningExperiment/data', pattern='spreadsheet', full.names=T)
+d2=data.frame()
+for (f in files) {
+  #print(f)
+  a=unlist(strsplit(f, '_'))
+  freq=a[2]; txHeight=a[3]; txPwr=a[4]; traffic=a[5]; speed=a[6]
+  #print(c(freq, ant, txPwr, traffic, speed))
+  tmp = read.table(file=f, header=T, sep=',')
+  tmp$freq      = as.factor(freq)
+  tmp$txHeight = as.factor(txHeight)
+  tmp$txPwr     = as.factor(txPwr)
+  tmp$traffic   = as.factor(traffic)
+  tmp$speed     = as.factor(speed)
+  d2=rbind(d2, tmp)
+}
+
+# remove unnecessary columns:
+#delete=c('elevation', 'sa.pwr.mw', 'sa.pwr.dBm', 0
+names(d2)=tolower(names(d2))
+
+# rename some:
+names(d2)[3]='lon'
+names(d2)[4]='elev'
+names(d2)[8]='fspl'
+names(d2)[9]='dist'
+#names(d2)[10]='pwr.vsa'
+names(d2)[11]='bpl.vsa'
+names(d2)[12]='k'
+names(d2)[20]='txHeight'
+names(d2)[21]='txPwr'
+
+
+##################################################
+### identify lashley and moorhead specimens:
+library(sp)
+# take lon lat values and create object for coord:
+#dat = d[(d$txPwr=='high'& d$txHeight=='high' & d$traffic=='high' & d$speed=='30mph'),]
+xy = d2[,3:2]
+
+#pts.df=SpatialPointsDataFrame(xy, data=dat, 
+#                           proj4string=CRS('+proj=longlat'))
+#pts.df=SpatialPointsDataFrame(xy, data=dat) 
+pts=SpatialPoints(xy) 
+
+# create polygon - lashley:
+poly.lashley=data.frame(lon=c(-105.260, -105.259, -105.256, -105.257),
+                        lat=c(39.995,    39.9955,  39.9907, 39.990))
+poly.lashley=rbind(poly.lashley, poly.lashley[1,])
+poly1=Polygon(poly.lashley)
+poly2=Polygons(list(poly1), ID='lashley')
+p.lashley=SpatialPolygons(list(poly2))
+
+# create polygon - moorehead:
+poly.moorhead=data.frame(lon=c(-105.249, -105.255  , -105.25460, -105.2485),
+                          lat=c( 39.9934,   39.9968,    39.99730,   39.994))
+poly.moorhead=rbind(poly.moorhead, poly.moorhead[1,])
+poly1=Polygon(poly.moorhead)
+poly2=Polygons(list(poly1), ID='moorhead')
+p.moorhead=SpatialPolygons(list(poly2))
+
+
+# find points inside polygon:
+#  over(SpatialPoints, SpatialPolygons)
+in.lashley = over(pts, p.lashley)
+in.moorhead = over(pts, p.moorhead)
+
+# id lashley specimens in dataframe:
+j = as.numeric(names(na.omit(in.lashley)))
+tmp.lashley = d2[as.numeric(names(na.omit(in.lashley))),]  ###
+tmp.lashley$road=as.factor('lashley')
+
+# id moorhead specimens in dataframe:
+j = as.numeric(names(na.omit(in.moorhead)))
+tmp.moorhead = d2[as.numeric(names(na.omit(in.moorhead))),]
+tmp.moorhead$road=as.factor('moorhead')
+
+dd = rbind(tmp.lashley, tmp.moorhead)
+
+# to make it work with code below
+levels(dd$txHeight) = c('high', 'low')
+levels(dd$txPwr) = c('high', 'low')
+levels(dd$traffic) = c('low', 'high')
+
+# remove second drive-bys
+d.1=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing to do
+d.2=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=284,]  # remove time>284
+
+d.3=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing to do
+d.4=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=271,]  # remove time>=271
+
+d.5=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing
+d.6=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=269,]  
+
+d.7=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing
+d.8=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=278,]  
+
+#. row 2:
+d.9= dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=86,]  
+d.10=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=245,]  
+
+d.11=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=104,]  
+d.12=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=261,]  
+
+d.13=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=76,]  
+d.14=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=215,]  
+
+d.15=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=94,]  
+d.16=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=255,]  
+
+#. row 3:
+d.17=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]  
+d.18=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=260,]  
+
+d.19=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]  
+d.20=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=272,]  
+
+d.21=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]  
+d.22=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=278,]  
+
+d.23=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]  
+d.24=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=279,]  
+
+#. row 4:
+d.25=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=86,]  
+d.26=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=244,]  
+
+d.27=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=93,]  
+d.28=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=255,]
+
+d.29=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley',]  
+d.30=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=257,]
+
+d.31=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley',]  
+d.32=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=262,]
+
+dd = rbind(d.1,d.2,d.3,d.4,d.5,d.6,d.7,d.8,d.9,d.10,
+          d.11,d.12,d.13,d.14,d.15,d.16,d.17,d.18,d.19,d.20,
+          d.21,d.22,d.23,d.24,d.25,d.26,d.27,d.28,d.29,d.30,
+          d.31,d.32)
+
+rm(d.1,d.2,d.3,d.4,d.5,d.6,d.7,d.8,d.9,d.10, d.11,d.12,d.13,d.14,d.15,d.16,d.17,d.18,d.19,d.20, d.21,d.22,d.23,d.24,d.25,d.26,d.27,d.28,d.29,d.30, d.31,d.32)
+
+# fix level names 
+levels(dd$txHeight) = c('high', 'low')
+levels(dd$txPwr) = c('47dBm', '37dBm')
+levels(dd$traffic) = c('offPeak', 'peak')
+names(dd)[24]='Route'
+levels(dd$Route) = c('LOS', 'nonLOS')
+
+# remove PL values higher than 140:
+dd=dd[dd$bpl.vsa<=140,]
+dd = ddply(dd, .(txHeight, txPwr, traffic, speed, Route), mutate, idx=1:length(time))
+#ggmap(plMap, darken=0.00, extent='panel') +
+#  geom_point(data=d, aes(y=lat, x=lon, colour=pwr.vsa), size=1.5) +
+#  scale_colour_gradientn(name='Received Power (dBm)', colours=c('blue', 'red', 'white')) +
+#  labs(x=NULL, y=NULL) + 
+#  theme(legend.position = 'top') +
+#  #geom_polygon(data=poly1, aes(x=lon, y=lat), alpha=0.50, fill='yellow') +
+#  #theme(line = element_blank()) + theme(axis.text = element_blank()) 
+#  facet_grid(traffic+speed~txPwr+txHeight, labeller=label_both) 
+
+@
+<<echo=T, eval=F>>=
+##################################################
+### identify lashley and moorhead specimens: 
+library(sp)
+# take lon lat values and create object for coord:
+#dat = d[(d$txPwr=='high'& d$txHeight=='high' & d$traffic=='high' & d$speed=='30mph'),]
+xy = d2[,3:2]
+
+#pts.df=SpatialPointsDataFrame(xy, data=dat, 
+#                           proj4string=CRS('+proj=longlat'))
+#pts.df=SpatialPointsDataFrame(xy, data=dat) 
+pts=SpatialPoints(xy) 
+
+# create polygon - lashley:
+poly.lashley=data.frame(lon=c(-105.260, -105.259, -105.256, -105.257),
+                        lat=c(39.995,    39.9955,  39.9907, 39.990))
+poly.lashley=rbind(poly.lashley, poly.lashley[1,])
+poly1=Polygon(poly.lashley)
+poly2=Polygons(list(poly1), ID='lashley')
+p.lashley=SpatialPolygons(list(poly2))
+
+# create polygon - moorehead:
+poly.moorhead=data.frame(lon=c(-105.249, -105.255  , -105.25460, -105.2485),
+                          lat=c( 39.9934,   39.9968,    39.99730,   39.994))
+poly.moorhead=rbind(poly.moorhead, poly.moorhead[1,])
+poly1=Polygon(poly.moorhead)
+poly2=Polygons(list(poly1), ID='moorhead')
+p.moorhead=SpatialPolygons(list(poly2))
+
+
+# find points inside polygon:
+#  over(SpatialPoints, SpatialPolygons)
+in.lashley = over(pts, p.lashley)
+in.moorhead = over(pts, p.moorhead)
+
+# id lashley specimens in dataframe:
+j = as.numeric(names(na.omit(in.lashley)))
+tmp.lashley = d2[as.numeric(names(na.omit(in.lashley))),]  ###
+tmp.lashley$road=as.factor('lashley')
+
+# id moorhead specimens in dataframe:
+j = as.numeric(names(na.omit(in.moorhead)))
+tmp.moorhead = d2[as.numeric(names(na.omit(in.moorhead))),]
+tmp.moorhead$road=as.factor('moorhead')
+
+dd = rbind(tmp.lashley, tmp.moorhead)
+@
+ 
+\end{enumerate}
+
+Next, the \fcn{gdal} library  for reading and writing raster and vector geospatial data.
+\end{document}
+
+\clearpage
+\appendix
+\appendixpage
+\addappheadtotoc
+
+\section{Land Cover Legend}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{NLCD_Colour_Classification_Update.jpg}
+  \caption{NLCD Color Classification}
+\end{figure}
+
+\end{document}
+
+\section{Some Useful Information}
+
+Residual sum of squares, RSS, is the sum of the square of the residuals. This is the difference between actual ($y$) and predicted ($\hat{y}$)  values.  Given by,
+
+\begin{eqnarray}
+  \text{RSS} & = & e_1^2 + e_2^2 + \cdots + e_n^2\\
+             & = & \sum_{i=1}^n (y_i-\hat{y}_i)^2 \nonumber
+\end{eqnarray}
+
+RSS
+RSE
+$R^2$, adj.\ $R^2$ 
+
+
+
+### TUTORIAL:
+<<eval=F>>=
+install.packages('tmap')
+library(rgdal);library(maptools);library(dplyr);library(tidyr);library(tmap)
+
+
+@
+
+
+%
+% vim: wrap spell background=light
