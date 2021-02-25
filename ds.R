@@ -1,4 +1,22 @@
-## ----AUTHOR, include=F------------------------------------
+## ----setOptions, echo=F, include=F, cache=F, purl=T----
+# set some display options  for including R code and R output in document
+opts_chunk$set(
+ background=rep(0.93, 3),
+ size='small',
+ tidy=F,
+ replace.assign=F,
+ width=60,
+ dev='png',
+ cache=T,
+ fig.pos='h!',
+ fig.align='center',
+ fig.width=6, fig.height=3,
+ show.signif.stars=T,
+ keep.blank.lines=T,
+ echo=F) 
+
+
+## ----AUTHOR, include=F-------------------------------
 # written by: Mark McFarland, P.E.
 #             December, 2020
 #             Boulder, CO
@@ -14,7 +32,7 @@
 ## cat data/AZ_LincolnHeight_Dwntwn_Run1.txt
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 d1=read.table('data/AZ_LincolnHeight_Dwntwn_Run1.csv', sep=',', header=T) 
 d1$city=as.factor('LincolnHeight')
 d1$region=as.factor('downtown')
@@ -89,45 +107,68 @@ d$pl.m=d$pl.m*-1
 #levels(d$region)[4]='suburb'
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 dim(d)
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 replications(pl.m~city*region*run, data=d)
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 summary(d) 
 
 
-## ----fig.height=6, fig.width=6, message=F-----------------
+## ----fig.height=6, fig.width=6, message=F------------
 ggplot(d, aes(x=pl.m, fill=run)) +
   geom_histogram(position='identity', alpha=0.5) +
   #geom_histogram( position='dodge') +
   theme(legend.position = 'top') +
   facet_wrap(city~region, labeller = "label_both")
 
-
-## ----fig.height=5-----------------------------------------
-ggplot(d, aes(x=run, y=pl.m, fill=run)) +
-  geom_boxplot(coef=1e3) +
+## ----b1.phoenix.hist, dpi=200, fig.height=6, fig.width=6, message=F, include=F----
+# for Brad
+ggplot(d, aes(x=pl.m, fill=run)) +
+  geom_histogram(position='identity', alpha=0.5) +
+  #geom_histogram( position='dodge') +
+  labs(x='Measured Path Loss (dBm)') +
   theme(legend.position = 'top') +
-  facet_wrap(city~region)
+  facet_wrap(city~region, labeller = "label_both")
 
 
-## ----fig.height=5, dpi=75---------------------------------
+## ----fig.height=5------------------------------------
+ggplot(d, aes(x=run, y=pl.m)) +
+  geom_boxplot(coef=1e3) +
+  labs(y='Measured Path Loss (dBm)') +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region, labeller='label_both')
+
+## ----b1.phoenix.box, fig.height=5, dpi=200, include=F----
+ggplot(d, aes(x=run, y=pl.m)) +
+  geom_boxplot(coef=1e3) +
+  labs(y='Measured Path Loss (dBm)') +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region, labeller='label_both')
+
+
+## ----fig.height=5, dpi=75----------------------------
 ggplot(d, aes(x=time, y=pl.m, shape=run, colour=run)) +
   geom_line() +
   theme(legend.position = 'top') +
   facet_wrap(city~region) 
   #facet_grid(city~region) 
 
+## ----b1.phoenix.ts, fig.height=5, dpi=200, include=F----
+ggplot(d, aes(x=time, y=pl.m, shape=run, colour=run)) +
+  geom_line() +
+  labs(x='Time (s)', y='Measured Path Loss (dBm)') +
+  theme(legend.position = 'top') +
+  facet_wrap(city~region, labeller='label_both') 
+  #facet_grid(city~region) 
 
-## ----fig.height=8, fig.width=10, dpi=75-------------------
-# set up api key: 
-# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
-#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+
+
+## ----pmap, fig.height=6, fig.width=8, dpi=75, message=F----
 library(ggmap)   
 loc = c(lon=mean(d$lon), lat=mean(d$lat))
 plMap.phx = get_map(location=loc, zoom=11, source='stamen', maptype='terrain', messaging=T)
@@ -144,8 +185,43 @@ ggmap(plMap.phx, darken=0.00, extent='panel') +
   #theme(legend.position = 'bottom') +
   theme(line = element_blank()) + theme(axis.text = element_blank()) 
 
+## ----b1.phoenix.map, fig.height=6, fig.width=8, dpi=200, include=F----
+loc = c(lon=mean(d$lon), lat=mean(d$lat))
+plMap.phx = get_map(location=loc, zoom=11, source='stamen', maptype='terrain', messaging=T)
 
-## ----eval=F-----------------------------------------------
+txLoc=data.frame(lon=-108.2404, lat=38.99187)
+ 
+ggmap(plMap.phx, darken=0.00, extent='panel') +
+  geom_point(data=d[d$run=='1',], aes(x=lon, y=lat, colour=pl.m), size=0.50) +
+  #geom_point(data=txLoc, aes(x=lon, y=lat), pch=4,colour='yellow', size=5) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL, color='Measured\nPath\nLoss\n(dBm)') + 
+  facet_wrap(city~region, nrow=2, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+
+
+## ----acfPhoenix, fig.height=4, fig.width=6, dpi=75----
+tmp=d[d$city=='LincolnHeight' & d$run=='1',]
+dl=dlply(tmp, .(region)) 
+par(mfrow=c(1,2))
+acf(dl[[1]]$pl.m, main=names(dl)[1],  lag.max=1000)
+acf(dl[[2]]$pl.m, main=names(dl)[2],  lag.max=1000)
+
+#library(ggfortify)
+#aut1oplot()
+
+
+## ----acfP, fig.height=4, fig.width=6, dpi=75---------
+dld=lapply(dl, function(x) x[seq(1, nrow(x), 25),])
+
+par(mfrow=c(1,2)) 
+acf(dld[[1]]$pl.m, main=names(dl)[1],  lag.max=1000)
+acf(dld[[2]]$pl.m, main=names(dl)[2],  lag.max=1000)
+
+
+## ----eval=F------------------------------------------
 ## fun=function(x) { ada=scale(x, scale=F, center=median(cltr)) }
 ## 
 ## 
@@ -155,7 +231,7 @@ ggmap(plMap.phx, darken=0.00, extent='panel') +
 ##          cltr.ada=scale(cltr, center=median(cltr), scale=F))
 
 
-## ----size='scriptsize'------------------------------------
+## ----size='scriptsize'-------------------------------
 d1=read.table('../tc/rfData/GrandJunction-GrandMesa/GrandMesa-to-Route1_1771-MHz_Jun0719_1_10.2_3_tbcorr_noheader.csv', sep=',', header=T) 
 d1$route=as.factor(1)
 d1$loc=as.factor('Grand Mesa')
@@ -184,18 +260,15 @@ d.g$fspl=abs(d.g$fspl)  # assuming path gain is recorded
 head(d.g)
 
 
-## ----eval=F-----------------------------------------------
+## ----eval=F------------------------------------------
 ## d.g=d.g[d.g$lat>39.02,]
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 dim(d.g)
 
 
-## ----fig.height=5, dpi=150--------------------------------
-# set up api key: 
-# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
-#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+## ----fig.height=5, dpi=75, message=F-----------------
 library(ggmap)   
 loc = c(lon=mean(d.g$lon)+0.04000, lat=mean(d.g$lat-0.0400))
 plMap.gm = get_map(location=loc, zoom=10, source='stamen', maptype='terrain', messaging=T)
@@ -212,8 +285,45 @@ ggmap(plMap.gm, darken=0.00, extent='panel') +
   #theme(legend.position = 'bottom') +
   theme(line = element_blank()) + theme(axis.text = element_blank()) 
 
+## ----b1.gj.map, fig.height=5, dpi=200, include=F-----
+library(ggmap)   
+loc = c(lon=mean(d.g$lon)+0.04000, lat=mean(d.g$lat-0.0400))
+plMap.gm = get_map(location=loc, zoom=10, source='stamen', maptype='terrain', messaging=T)
 
-## ----size='scriptsize'------------------------------------
+txLoc=data.frame(lon=-108.2404, lat=38.99187)
+
+ggmap(plMap.gm, darken=0.00, extent='panel') +
+  geom_point(data=d.g, aes(x=lon, y=lat, colour=pl.meas), size=0.50) +
+  geom_point(data=txLoc, aes(x=lon, y=lat), pch='*', colour='black', size=7) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL, color='Measured\nPath\nLoss\n(dBm)') + 
+  facet_wrap(~route, nrow=2, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+
+
+## ----acfGJ, fig.height=5, fig.width=6, dpi=75--------
+d.gl=dlply(d.g, .(route))
+par(mfrow=c(2,2))
+acf(d.gl[[1]]$pl.m, main=names(d.gl)[1],  lag.max=1000)
+acf(d.gl[[2]]$pl.m, main=names(d.gl)[2],  lag.max=1000)
+acf(d.gl[[3]]$pl.m, main=names(d.gl)[3],  lag.max=1000)
+acf(d.gl[[4]]$pl.m, main=names(d.gl)[4],  lag.max=1000)
+#library(ggfortify)
+#aut1oplot()
+
+
+## ----j2, fig.height=5, fig.width=6, dpi=75-----------
+d.gld=lapply(d.gl, function(x) x[seq(1, nrow(x), 25),])
+par(mfrow=c(2,2))
+acf(d.gld[[1]]$pl.m, main=names(d.gld)[1],  lag.max=1000)
+acf(d.gld[[2]]$pl.m, main=names(d.gld)[2],  lag.max=1000)
+acf(d.gld[[3]]$pl.m, main=names(d.gld)[3],  lag.max=1000)
+acf(d.gld[[4]]$pl.m, main=names(d.gld)[4],  lag.max=1000)
+
+
+## ----size='scriptsize'-------------------------------
 d1=read.table('../tc/rfData/SaltLakeCity-CityCreek/CityCreek-to-South_1773-MHz_Jun1318_1_19.4_3_tbcorr_noheader.csv', sep=',', header=T) 
 d1$route=as.factor(1)
 d1$loc=as.factor('SLC')
@@ -237,14 +347,11 @@ d.s$fspl=abs(d.s$fspl)  # assuming path gain is recorded
 head(d.s)
 
 
-## ---------------------------------------------------------
+## ----------------------------------------------------
 dim(d.s)
 
 
-## ----fig.height=5, dpi=150, messages=F--------------------
-# set up api key:
-# AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc
-#register_google(key='AIzaSyA3B2rAAfE0rfWfKRulMOwcO_wFixQhjVc', write=T)
+## ----fig.height=5, dpi=75, message=F-----------------
 library(ggmap)  
 loc = c(lon=median(d.s$lon)+0.00000, lat=median(d.s$lat-0.0000))
 plMap.slc = get_map(location=loc, zoom=12, source='stamen', maptype='terrain', messaging=T)
@@ -255,238 +362,55 @@ txLoc=data.frame(lon=-111.880944, lat=40.807189) #SLC
 
 ggmap(plMap.slc, darken=0.00, extent='panel') +
   geom_point(data=d.s, aes(x=lon, y=lat, colour=pl.meas), size=0.50) +
-  geom_point(data=txLoc, aes(x=lon, y=lat), pch=4,colour='black', size=5) +
+  geom_point(data=txLoc, aes(x=lon, y=lat), pch='*',colour='black', size=7) +
   #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
   scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
-  labs(x=NULL, y=NULL) + 
+  labs(x=NULL, y=NULL, color='Measured\nPath\nLoss\n(dBm)') + 
+  facet_wrap(~route, nrow=2)+#, labeller = "label_both") +
+  #theme(legend.position = 'bottom') +
+  theme(line = element_blank()) + theme(axis.text = element_blank()) 
+
+## ----b1.slc.map, fig.height=5, dpi=200, messages=F, include=F----
+library(ggmap)  
+loc = c(lon=median(d.s$lon)+0.00000, lat=median(d.s$lat-0.0000))
+plMap.slc = get_map(location=loc, zoom=12, source='stamen', maptype='terrain', messaging=T)
+
+#txLoc=data.frame(lon=-108.2404, lat=38.99187) #GM
+#txLoc=data.frame(lon=-108.2404, lat=39.089337) #LM
+txLoc=data.frame(lon=-111.880944, lat=40.807189) #SLC
+
+ggmap(plMap.slc, darken=0.00, extent='panel') +
+  geom_point(data=d.s, aes(x=lon, y=lat, colour=pl.meas), size=0.50) +
+  geom_point(data=txLoc, aes(x=lon, y=lat), pch='*',colour='black', size=7) +
+  #scale_colour_gradientn(name='Path Loss (dBm)', colours=c('blue', 'red', 'white')) +
+  scale_colour_gradientn( colours=c('blue', 'red', 'white')) +
+  labs(x=NULL, y=NULL, color='Measured\nPath\nLoss\n(dBm)') + 
   facet_wrap(~route, nrow=2)+#, labeller = "label_both") +
   #theme(legend.position = 'bottom') +
   theme(line = element_blank()) + theme(axis.text = element_blank()) 
 
 
-## ----setup,eval=F, echo=FALSE-----------------------------
-## knit_hooks$set(source = function(x, options) {
-##     paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
-##         "\\end{lstlisting}\n", sep = "")
-## })
+## ----acfslc, fig.height=5, fig.width=6, dpi=75-------
+d.sl=dlply(d.s, .(route))
+par(mfrow=c(2,2))
+acf(d.sl[[1]]$pl.m, main=names(d.sl)[1],  lag.max=500)
+acf(d.sl[[2]]$pl.m, main=names(d.sl)[2],  lag.max=500)
+acf(d.sl[[3]]$pl.m, main=names(d.sl)[3],  lag.max=500)
+#library(ggfortify)
+#aut1oplot()
 
 
-## ----readData, eval=F, echo=F, size='footnotesize'--------
-## #file='data/spreadsheet_1760M_loant_hipwr_offpeak_20mph_final.csv'
-## #j = read.table(file='data/spreadsheet_1760M_loant_hipwr_offpeak_20mph_final.csv', header=T, sep=',')
-## 
-## library(plyr)
-## files=list.files(path='~/projects/clutter/screeningExperiment/data', pattern='spreadsheet', full.names=T)
-## d2=data.frame()
-## for (f in files) {
-##   #print(f)
-##   a=unlist(strsplit(f, '_'))
-##   freq=a[2]; txHeight=a[3]; txPwr=a[4]; traffic=a[5]; speed=a[6]
-##   #print(c(freq, ant, txPwr, traffic, speed))
-##   tmp = read.table(file=f, header=T, sep=',')
-##   tmp$freq      = as.factor(freq)
-##   tmp$txHeight = as.factor(txHeight)
-##   tmp$txPwr     = as.factor(txPwr)
-##   tmp$traffic   = as.factor(traffic)
-##   tmp$speed     = as.factor(speed)
-##   d2=rbind(d2, tmp)
-## }
-## 
-## # remove unnecessary columns:
-## #delete=c('elevation', 'sa.pwr.mw', 'sa.pwr.dBm', 0
-## names(d2)=tolower(names(d2))
-## 
-## # rename some:
-## names(d2)[3]='lon'
-## names(d2)[4]='elev'
-## names(d2)[8]='fspl'
-## names(d2)[9]='dist'
-## #names(d2)[10]='pwr.vsa'
-## names(d2)[11]='bpl.vsa'
-## names(d2)[12]='k'
-## names(d2)[20]='txHeight'
-## names(d2)[21]='txPwr'
-## 
-## 
-## ##################################################
-## ### identify lashley and moorhead specimens:
-## library(sp)
-## # take lon lat values and create object for coord:
-## #dat = d[(d$txPwr=='high'& d$txHeight=='high' & d$traffic=='high' & d$speed=='30mph'),]
-## xy = d2[,3:2]
-## 
-## #pts.df=SpatialPointsDataFrame(xy, data=dat,
-## #                           proj4string=CRS('+proj=longlat'))
-## #pts.df=SpatialPointsDataFrame(xy, data=dat)
-## pts=SpatialPoints(xy)
-## 
-## # create polygon - lashley:
-## poly.lashley=data.frame(lon=c(-105.260, -105.259, -105.256, -105.257),
-##                         lat=c(39.995,    39.9955,  39.9907, 39.990))
-## poly.lashley=rbind(poly.lashley, poly.lashley[1,])
-## poly1=Polygon(poly.lashley)
-## poly2=Polygons(list(poly1), ID='lashley')
-## p.lashley=SpatialPolygons(list(poly2))
-## 
-## # create polygon - moorehead:
-## poly.moorhead=data.frame(lon=c(-105.249, -105.255  , -105.25460, -105.2485),
-##                           lat=c( 39.9934,   39.9968,    39.99730,   39.994))
-## poly.moorhead=rbind(poly.moorhead, poly.moorhead[1,])
-## poly1=Polygon(poly.moorhead)
-## poly2=Polygons(list(poly1), ID='moorhead')
-## p.moorhead=SpatialPolygons(list(poly2))
-## 
-## 
-## # find points inside polygon:
-## #  over(SpatialPoints, SpatialPolygons)
-## in.lashley = over(pts, p.lashley)
-## in.moorhead = over(pts, p.moorhead)
-## 
-## # id lashley specimens in dataframe:
-## j = as.numeric(names(na.omit(in.lashley)))
-## tmp.lashley = d2[as.numeric(names(na.omit(in.lashley))),]  ###
-## tmp.lashley$road=as.factor('lashley')
-## 
-## # id moorhead specimens in dataframe:
-## j = as.numeric(names(na.omit(in.moorhead)))
-## tmp.moorhead = d2[as.numeric(names(na.omit(in.moorhead))),]
-## tmp.moorhead$road=as.factor('moorhead')
-## 
-## dd = rbind(tmp.lashley, tmp.moorhead)
-## 
-## # to make it work with code below
-## levels(dd$txHeight) = c('high', 'low')
-## levels(dd$txPwr) = c('high', 'low')
-## levels(dd$traffic) = c('low', 'high')
-## 
-## # remove second drive-bys
-## d.1=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing to do
-## d.2=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=284,]  # remove time>284
-## 
-## d.3=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing to do
-## d.4=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=271,]  # remove time>=271
-## 
-## d.5=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing
-## d.6=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=269,]
-## 
-## d.7=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='lashley',]  # nothing
-## d.8=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=278,]
-## 
-## #. row 2:
-## d.9= dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=86,]
-## d.10=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=245,]
-## 
-## d.11=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=104,]
-## d.12=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=261,]
-## 
-## d.13=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=76,]
-## d.14=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=215,]
-## 
-## d.15=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=94,]
-## d.16=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='low' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=255,]
-## 
-## #. row 3:
-## d.17=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]
-## d.18=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=260,]
-## 
-## d.19=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]
-## d.20=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=272,]
-## 
-## d.21=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]
-## d.22=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=278,]
-## 
-## d.23=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='lashley',]
-## d.24=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='20mph' & dd$road=='moorhead' & dd$time<=279,]
-## 
-## #. row 4:
-## d.25=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=86,]
-## d.26=dd[dd$txPwr=='high' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=244,]
-## 
-## d.27=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley' & dd$time<=93,]
-## d.28=dd[dd$txPwr=='high' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=255,]
-## 
-## d.29=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley',]
-## d.30=dd[dd$txPwr=='low' & dd$txHeight=='high' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=257,]
-## 
-## d.31=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='lashley',]
-## d.32=dd[dd$txPwr=='low' & dd$txHeight=='low' & dd$traffic=='high' & dd$speed=='30mph' & dd$road=='moorhead' & dd$time<=262,]
-## 
-## dd = rbind(d.1,d.2,d.3,d.4,d.5,d.6,d.7,d.8,d.9,d.10,
-##           d.11,d.12,d.13,d.14,d.15,d.16,d.17,d.18,d.19,d.20,
-##           d.21,d.22,d.23,d.24,d.25,d.26,d.27,d.28,d.29,d.30,
-##           d.31,d.32)
-## 
-## rm(d.1,d.2,d.3,d.4,d.5,d.6,d.7,d.8,d.9,d.10, d.11,d.12,d.13,d.14,d.15,d.16,d.17,d.18,d.19,d.20, d.21,d.22,d.23,d.24,d.25,d.26,d.27,d.28,d.29,d.30, d.31,d.32)
-## 
-## # fix level names
-## levels(dd$txHeight) = c('high', 'low')
-## levels(dd$txPwr) = c('47dBm', '37dBm')
-## levels(dd$traffic) = c('offPeak', 'peak')
-## names(dd)[24]='Route'
-## levels(dd$Route) = c('LOS', 'nonLOS')
-## 
-## # remove PL values higher than 140:
-## dd=dd[dd$bpl.vsa<=140,]
-## dd = ddply(dd, .(txHeight, txPwr, traffic, speed, Route), mutate, idx=1:length(time))
-## #ggmap(plMap, darken=0.00, extent='panel') +
-## #  geom_point(data=d, aes(y=lat, x=lon, colour=pwr.vsa), size=1.5) +
-## #  scale_colour_gradientn(name='Received Power (dBm)', colours=c('blue', 'red', 'white')) +
-## #  labs(x=NULL, y=NULL) +
-## #  theme(legend.position = 'top') +
-## #  #geom_polygon(data=poly1, aes(x=lon, y=lat), alpha=0.50, fill='yellow') +
-## #  #theme(line = element_blank()) + theme(axis.text = element_blank())
-## #  facet_grid(traffic+speed~txPwr+txHeight, labeller=label_both)
-## 
-
-## ----echo=T, eval=F---------------------------------------
-## ##################################################
-## ### identify lashley and moorhead specimens:
-## library(sp)
-## # take lon lat values and create object for coord:
-## #dat = d[(d$txPwr=='high'& d$txHeight=='high' & d$traffic=='high' & d$speed=='30mph'),]
-## xy = d2[,3:2]
-## 
-## #pts.df=SpatialPointsDataFrame(xy, data=dat,
-## #                           proj4string=CRS('+proj=longlat'))
-## #pts.df=SpatialPointsDataFrame(xy, data=dat)
-## pts=SpatialPoints(xy)
-## 
-## # create polygon - lashley:
-## poly.lashley=data.frame(lon=c(-105.260, -105.259, -105.256, -105.257),
-##                         lat=c(39.995,    39.9955,  39.9907, 39.990))
-## poly.lashley=rbind(poly.lashley, poly.lashley[1,])
-## poly1=Polygon(poly.lashley)
-## poly2=Polygons(list(poly1), ID='lashley')
-## p.lashley=SpatialPolygons(list(poly2))
-## 
-## # create polygon - moorehead:
-## poly.moorhead=data.frame(lon=c(-105.249, -105.255  , -105.25460, -105.2485),
-##                           lat=c( 39.9934,   39.9968,    39.99730,   39.994))
-## poly.moorhead=rbind(poly.moorhead, poly.moorhead[1,])
-## poly1=Polygon(poly.moorhead)
-## poly2=Polygons(list(poly1), ID='moorhead')
-## p.moorhead=SpatialPolygons(list(poly2))
-## 
-## 
-## # find points inside polygon:
-## #  over(SpatialPoints, SpatialPolygons)
-## in.lashley = over(pts, p.lashley)
-## in.moorhead = over(pts, p.moorhead)
-## 
-## # id lashley specimens in dataframe:
-## j = as.numeric(names(na.omit(in.lashley)))
-## tmp.lashley = d2[as.numeric(names(na.omit(in.lashley))),]  ###
-## tmp.lashley$road=as.factor('lashley')
-## 
-## # id moorhead specimens in dataframe:
-## j = as.numeric(names(na.omit(in.moorhead)))
-## tmp.moorhead = d2[as.numeric(names(na.omit(in.moorhead))),]
-## tmp.moorhead$road=as.factor('moorhead')
-## 
-## dd = rbind(tmp.lashley, tmp.moorhead)
+## ----j3, fig.height=5, fig.width=6, dpi=75-----------
+d.sld=lapply(d.sl, function(x) x[seq(1, nrow(x), 50),])
+par(mfrow=c(2,2))
+acf(d.sld[[1]]$pl.m, main=names(d.sld)[1],  lag.max=500)
+acf(d.sld[[2]]$pl.m, main=names(d.sld)[2],  lag.max=500)
+acf(d.sld[[3]]$pl.m, main=names(d.sld)[3],  lag.max=500)
 
 
-## ----eval=F-----------------------------------------------
+
+
+## ----eval=F------------------------------------------
 ## install.packages('tmap')
 ## library(rgdal);library(maptools);library(dplyr);library(tidyr);library(tmap)
 ## 
